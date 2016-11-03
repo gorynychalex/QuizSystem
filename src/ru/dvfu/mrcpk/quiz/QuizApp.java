@@ -15,10 +15,15 @@ public class QuizApp {
 //    Map<Integer,String> questionss, addons, optionQA;
 //    List<Byte> comparisonQA, validAnswers;
 
+
+
     public static void main(String[] args) throws IOException {
 
         //Массив с вопросами и ответами
         List<Question> questions = null;
+
+        //Массив с ответами пользователя
+        List<Byte> answerUser = new ArrayList<>();
 
         BufferedReader bufferedReader = new BufferedReader(new FileReader("/home/gorynych/java-questions.txt"));
 
@@ -28,9 +33,29 @@ public class QuizApp {
 
         System.out.println("Всего "+ questions.size() + " вопросов.");
 
-        System.out.println(questions.get(4));
-
         bufferedReader.close();
+
+
+        // Опрос
+        BufferedReader bufferedReader1 = new BufferedReader(new InputStreamReader(System.in));
+
+        for(Question question: questions){
+            System.out.println(question);
+            System.out.println("Введите ответ: ");
+            answerUser.add(Byte.parseByte(bufferedReader1.readLine()));
+        }
+
+        int o = 1;
+        System.out.println("Ответы:");
+        for(Byte b: answerUser) {
+            System.out.print(o++ + "\t");
+        }
+
+        for(Byte b: answerUser)
+            System.out.print(b + "\t");
+
+        bufferedReader1.close();
+
     }
 
     public static List<Question> ParseQuestions (BufferedReader bufferedReader) throws IOException {
