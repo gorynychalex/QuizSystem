@@ -12,8 +12,11 @@ import java.util.Map;
 
 public class QuizApp {
 
+    // Массивы для получения данных в императивном стиле
+    // Массив с вопросами, массив с подробностями вопросов, массив с вариантами ответов
 //    Map<Integer,String> questionss, addons, optionQA;
-//    List<Byte> comparisonQA, validAnswers;
+    // Массив с соответствиями вопросов и вариантами ответов, массив с правильными вариантами ответов, массив с ответами пользователя.
+//    List<Byte> comparisonQA, validAnswers, userAnswers;
 
 
 
@@ -25,39 +28,62 @@ public class QuizApp {
         //Массив с ответами пользователя
         List<Byte> answerUser = new ArrayList<>();
 
-        BufferedReader bufferedReader = new BufferedReader(new FileReader("/home/gorynych/java-questions.txt"));
+        //Счетчик неверных ответов
+        int wrongAnswers=0;
 
-        int i=0;
-        //Список вопросов
+        // 1 часть - распознавание вопросов из файла и сохранение в виде объектов.
+        String fileName = "/home/gorynych/java-questions.txt";
+
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+
+        // Запуск метода для считывания данных из файла, открытого в предыдущем потоке. Результат возвращается в виде списка вопросов.
         questions = ParseQuestions(bufferedReader);
 
-        System.out.println("Всего "+ questions.size() + " вопросов.");
-
         bufferedReader.close();
+        System.out.println("Файл: " + fileName);
+        System.out.println("Всего распознано "+ questions.size() + " вопросов. \n");
 
 
-        // Опрос
+        // 2 часть - опрос.
+
+        // Объект List<Questions> questions - получен из файла. Нужно из БД!!!
+
+        // Поток на получение ответов пользователя
         BufferedReader bufferedReader1 = new BufferedReader(new InputStreamReader(System.in));
 
+        // Последовательный вывод вопросов с вариантами ответов. В этом же цикле ввод результатов.
         for(Question question: questions){
             System.out.println(question);
-            System.out.println("Введите ответ: ");
-            answerUser.add(Byte.parseByte(bufferedReader1.readLine()));
-        }
-
-        int o = 1;
-        System.out.println("Ответы:");
-        for(Byte b: answerUser) {
-            System.out.print(o++ + "\t");
-        }
-
-        for(Byte b: answerUser)
-            System.out.print(b + "\t");
+            System.out.println("Введите последовательно ответы, разделенные пробелом: ");
+            answerUser.add((byte) question.setUserAnswers(bufferedReader1.readLine()));
+            }
 
         bufferedReader1.close();
 
+        System.out.println("Ответы пользователя:");
+
+        for (int j = 0; j < answerUser.size(); j++) {
+            System.out.print(j + "\t");
+        }
+
+        System.out.println();
+
+        int sum = 0;
+        for(Byte a: answerUser){
+            System.out.print(a + "\t");
+            sum += a;
+        }
+        try {
+            System.out.println("Общий бал: " + (float)(sum/(2*answerUser.size())));
+        } catch (ArithmeticException e){
+            System.out.println("ответов не зафиксировано");
+
+        }
+
     }
 
+    //Метод для распознавания текста файла в формате вопроса
+    //Не хватает распознавания картинки
     public static List<Question> ParseQuestions (BufferedReader bufferedReader) throws IOException {
 
         // Объявление и инициализация массива
@@ -79,7 +105,8 @@ public class QuizApp {
             // Шаблон "^\\s*(\\-|\\+).*" - отыскивает знак + или - с начала строки (могут быть пробелы)
             StringBuilder addons = new StringBuilder();
             while (!s.matches("^\\s*(\\-|\\+).*")){
-                addons.append(s + "\n");
+                addons.append(s);
+                addons.append("\n");
                 s = bufferedReader.readLine();
             }
 
