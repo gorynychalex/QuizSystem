@@ -1,0 +1,10 @@
+In this description we'll cover the steps in creating an interactive online quiz application.
+There is using console.
+
+Plan - steps:
+1) How to parse special file format for questions;
+2) How to structure details of quiz
+3) Class Person (Student)
+4) Class Quiz
+5) Class Question
+4) Class OptionQA

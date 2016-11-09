@@ -6,9 +6,7 @@ package ru.dvfu.mrcpk.quiz;
 
 import java.io.*;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class QuizApp {
 
@@ -21,6 +19,7 @@ public class QuizApp {
 
 
     public static void main(String[] args) throws IOException {
+
 
         //Массив с вопросами и ответами
         List<Question> questions = null;
@@ -48,14 +47,19 @@ public class QuizApp {
 
         // Объект List<Questions> questions - получен из файла. Нужно из БД!!!
 
+        Collections.shuffle(questions);
+
         // Поток на получение ответов пользователя
         BufferedReader bufferedReader1 = new BufferedReader(new InputStreamReader(System.in));
 
         // Последовательный вывод вопросов с вариантами ответов. В этом же цикле ввод результатов.
         for(Question question: questions){
             System.out.println(question);
-            System.out.println("Введите последовательно ответы, разделенные пробелом: ");
-            answerUser.add((byte) question.setUserAnswers(bufferedReader1.readLine()));
+            System.out.println("Введите последовательно ответы, разделенные пробелом или запятой: ");
+            question.setUserAnswers(bufferedReader1.readLine());
+
+            question.getResult();
+
             }
 
         bufferedReader1.close();
@@ -114,6 +118,8 @@ public class QuizApp {
 
             //Объявление массива для вопросов
             List<OptionQA> optionQAs = new ArrayList<>();
+            //Объявление ассоциативного массива
+            Map<String,OptionQA> optionQAMap = new HashMap<>();
 
             int k = 0;
             while (s.matches("^\\s*(\\-|\\+).*") && bufferedReader.ready()) {
@@ -128,6 +134,7 @@ public class QuizApp {
                 //Добавление ответа
                 optionQAs.add(optionQA);
                 k++;
+                optionQAMap.put(String.valueOf(k),optionQA);
                 s = bufferedReader.readLine();
             }
 
