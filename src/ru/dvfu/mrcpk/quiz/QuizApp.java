@@ -57,9 +57,6 @@ public class QuizApp {
             System.out.println(question);
             System.out.println("Введите последовательно ответы, разделенные пробелом или запятой: ");
             question.setUserAnswers(bufferedReader1.readLine());
-
-            question.getResult();
-
             }
 
         bufferedReader1.close();
@@ -126,10 +123,10 @@ public class QuizApp {
                 OptionQA optionQA = null;
                 if (s.matches("^\\s*(\\-).*")) {
 //                    System.out.println("неверно! " + s);
-                    optionQA = new OptionQA(s.substring(1), (byte) 0);
+                    optionQA = new OptionQA(s.substring(1), (byte) 0, false);
                 } else if (s.matches("^\\s*(\\+).*")) {
 //                    System.out.println("верно! " + s);
-                    optionQA = new OptionQA(s.substring(1), (byte) 1);
+                    optionQA = new OptionQA(s.substring(1), (byte) 1, true);
                 }
                 //Добавление ответа
                 optionQAs.add(optionQA);

@@ -17,7 +17,7 @@ public class Question implements Serializable{
     private List<OptionQA> optionQAs;
 
     // Результат ответа(ов) на вопрос
-    private byte getResultQ;
+    private byte mark;
 
     // Для заполнения вопроса, сообщается сам вопрос, развернутое содержание и список вариантов ответов.
     public Question(String questions, StringBuilder addons, List<OptionQA> optionQAs) {
@@ -59,109 +59,45 @@ public class Question implements Serializable{
 
             optionQAs.get(Integer.parseInt(answers.split("(\\p{Punct}|\\p{Blank})")[i])-1).setUserAnswer((byte) 1);
 
-//            System.out.print("optionQAs.get(" + i + ") = " + optionQAs.get(Integer.parseInt(answers.split("(\\p{Punct}|\\p{Blank})")[i])-1).getOption() + "\t");
+            optionQAs.get(Integer.parseInt(answers.split("(\\p{Punct}|\\p{Blank})")[i])-1).setUserAnswerB(true);
         }
-//        System.out.println();
     }
 
-    public byte markEqual(){
-        //Расчет оценки
-        float mark = (float) getCorrectUserAnswers()/(float) getSumCorrectOptionsQA()/((float) getInCorrectUserAnswers()+1);
-        return (byte)(mark*100);
-    }
-
-    // Метод вывода результата пользователя
-    public byte getResult(){
-
-        //Объявление переменной счетчика вариантов ответа
-//        int i = 0;
-
-        // Переменная для подсчета суммы ответов пользователя
-//        int sumUserAnswers = 0;
-
-        //Перебор всех вариантов ответа
-//        for(OptionQA optionQA: optionQAs){
-            //Строка разделения ответов и преобразование в тип byte
-//            optionQA.setUserAnswer(Byte.parseByte(answers.split(" ")[i]));
-//            System.out.print(optionQA.defineResult() + "\t");
-
-            //Счетчик правильных ответов
-//            i++;
-
-//            sumOptions += optionQA.getCorrectA();
-
-//            sumUserAnswers += optionQA.defineResult();
-//        }
-
-
-//        System.out.println("Всего ответов " + i);
-        System.out.println("Сумма правильных ответов " + getSumCorrectOptionsQA());
-        System.out.println("Сумма ответов пользователя " + getSumUserAnswers());
-        try {
-//            int getRes = sumUserAnswers*10/i;
-            int getRes = getSumUserAnswers()*10/ getSumCorrectOptionsQA();
-            getResultQ = (byte) (getRes > 0 ? getRes : 0);
-        } catch (ArithmeticException e){
-            System.out.println("Сумма правильных ответов - ноль! Некорректный вопрос!");
-            getResultQ = 0;
+    //Расчет оценки
+    public byte markEst(){
+        int sumOptionsTrue=0,sumAnsTrue=0,sunAnsFalse=0;
+        for(int i = 0; i < optionQAs.size(); i++) {
+            if(optionQAs.get(i).isCorrectOpt()) sumOptionsTrue++;
+            if(optionQAs.get(i).isCorrectOpt() & optionQAs.get(i).isUserAnswerB()) sumAnsTrue++;
+            if( (optionQAs.get(i).isCorrectOpt() ^ optionQAs.get(i).isUserAnswerB()) & !optionQAs.get(i).isUserAnswerB()) {sunAnsFalse++;
+                System.out.println("i = " + i);}
         }
-        System.out.println("Баллов за ответ на вопрос: " + getResultQ);
-        System.out.println("Оценка за ответ на вопрос: " + getResultQ/2);
-        System.out.println();
-        return getResultQ;
+//        System.out.println("Sum of all true options = " + sumOptionsTrue);
+//        System.out.println("Sum of true answers = " + sumAnsTrue);
+//        System.out.println("Sum of false answers = " + sunAnsFalse);
+//        System.out.println("mark = КВП/ОКП/(КВН + 1)");
+
+        float mark1 = (float)sumAnsTrue/(float)sumOptionsTrue/((float)sunAnsFalse+1);
+        mark = (byte) (mark1*100);
+
+//        System.out.println("Баллов за ответ на вопрос: " + mark);
+//        System.out.println("Оценка за ответ на вопрос: " + (float)(5*(float)mark/100));
+
+        return mark;
     }
 
-    // Метод получения суммы верных ответов
-    public int getSumCorrectOptionsQA(){
-
-        int sum=0;
-        for(OptionQA o: optionQAs)
-            sum += o.getCorrectA();
-
-        return sum;
-    }
-
-    // Метод получения суммы ответов пользователя
-    public int getSumUserAnswers(){
-
-        int sum=0;
-        for(OptionQA o: optionQAs)
-            sum += o.defineResult();
-
-        return sum;
-    }
-
-    // Метод получения суммы ВЕРНЫХ ответов пользователя
-    public int getCorrectUserAnswers(){
-
-        int sum=0;
-        for(OptionQA o: optionQAs) {
-            if (o.equals(1)) {
-                sum += o.defineResult();
-            }
-        }
-        return sum;
-    }
-
-    // Метод получения суммы НЕВЕРНЫХ ответов пользователя
-    public int getInCorrectUserAnswers(){
-
-        int sum=0;
-        for(OptionQA o: optionQAs) {
-            if (o.equals(-1)) {
-                sum += o.defineResult();
-            }
-        }
-        return -sum;
-    }
+    public byte getMark(){ return mark; };
 
     // Метод вывода вариантов ответов
     public String getStringOptionQAs(){
 
+        //Встряска вариантов ответов
         Collections.shuffle(optionQAs);
 
-        StringBuilder s = new StringBuilder();
+        //Номер варианта ответа
         int i=1;
+
+        StringBuilder s = new StringBuilder();
 
         for(OptionQA optionQA: optionQAs){
             s.append(i);
@@ -179,64 +115,3 @@ public class Question implements Serializable{
     }
 }
 
-// Класс для одного ответа
-class OptionQA{
-    // Вариант ответа
-    private String option;
-
-    // Корректность 0 или 1 (false или true)
-    private byte correctA;
-
-    //User answer
-    private byte userAnswer;
-
-
-    public byte getUserAnswer() {
-        return userAnswer;
-    }
-
-    public void setUserAnswer(byte userAnswer) {
-        this.userAnswer = userAnswer;
-    }
-
-    /* Результат ответа на вопрос (последовательно в тернарном операторе):
-       a) Если пользователь выбрал правильный вариант ответа, тогда возвращается '1';
-       b) Неверные варианты так и остаются '0';
-       c) Если выбран неверный вариант ответа, то '-1';
-       d) Если не выбран правильный вариант, тогда 0.
-     */
-    public byte defineResult(){
-//        return (byte) ((correctA == userAnswer)? 1 : -1);
-        return (byte) ((correctA == userAnswer)? ((correctA == 0)? 0 : 1) : ((correctA == 0)? -1 : 0));
-    }
-
-    public OptionQA(String option, byte correctA) {
-        this.option = option;
-        this.correctA = correctA;
-    }
-
-    public byte getCorrectA() {
-        return correctA;
-    }
-
-    public void setCorrectA(byte correctA) {
-        this.correctA = correctA;
-    }
-
-    public String getOption() {
-        return option;
-    }
-
-    public void setOption(String option) {
-        this.option = option;
-    }
-
-    @Override
-    public String toString() {
-
-        return option;
-
-        //Для тестирования выводится вариант с правильным ответом и ответом пользователя
-//        return option + "\t = " + correctA + "\tuserAnswer = " + userAnswer;
-    }
-}

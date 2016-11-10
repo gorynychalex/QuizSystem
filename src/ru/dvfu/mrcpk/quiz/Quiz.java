@@ -53,35 +53,26 @@ public class Quiz {
 
             System.out.println(question);
 
-            System.out.println("Введите последовательно ответы, разделенные пробелом или запятой: ");
+            System.out.println("Введите последовательно номера правильных ответов, разделенные пробелом или запятой: ");
 
             question.setUserAnswers(bufferedReader.readLine());
 
-            question.markEqual();
+            //Вызов метода расчета оценки
+            question.markEst();
         }
 
         bufferedReader.close();
 
+        //Вывод результата пользователя
         System.out.println("Ответы пользователя:");
 
-//        for (int j = 0; j < answerUser.size(); j++) {
-//            System.out.print(j + "\t");
-//        }
-//
-//        System.out.println();
-//
-//        int sum = 0;
-//        for(Byte a: answerUser){
-//            System.out.print(a + "\t");
-//            sum += a;
-//        }
-//        try {
-//            System.out.println("Общий бал: " + (float)(sum/(2*answerUser.size())));
-//        } catch (ArithmeticException e){
-//            System.out.println("ответов не зафиксировано");
-//
-//        }
+        int sumMarks = 0;
+        for(Question question: questions){
+            System.out.print(question.getMark() + "\t");
+            sumMarks += question.getMark();
+        }
 
+        System.out.println("\nОбщая оценка: " + (5*(float)sumMarks/questions.size()/100));
 
     }
 
@@ -121,10 +112,10 @@ public class Quiz {
                 OptionQA optionQA = null;
                 if (s.matches("^\\s*(\\-).*")) {
 //                    System.out.println("неверно! " + s);
-                    optionQA = new OptionQA(s.substring(1), (byte) 0);
+                    optionQA = new OptionQA(s.substring(1), (byte) 0, false);
                 } else if (s.matches("^\\s*(\\+).*")) {
 //                    System.out.println("верно! " + s);
-                    optionQA = new OptionQA(s.substring(1), (byte) 1);
+                    optionQA = new OptionQA(s.substring(1), (byte) 1, true);
                 }
 
                 //Добавление ответа в список
