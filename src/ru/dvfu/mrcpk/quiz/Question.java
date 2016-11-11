@@ -1,13 +1,19 @@
 package ru.dvfu.mrcpk.quiz;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Class Question
  */
 public class Question implements Serializable{
+
+    //Номер вопроса
+    static int numQ=1;
 
     // Вопрос и подробности
     private String question;
@@ -19,11 +25,44 @@ public class Question implements Serializable{
     // Результат ответа(ов) на вопрос
     private byte mark;
 
+
+    // Таймаут
+    Calendar startQuiz;
+    Calendar stopQuiz;
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:MM:ss", Locale.ENGLISH);
+
+
+    public Calendar getStartQuiz() {
+        return startQuiz;
+    }
+
+    public void setStartQuiz(Calendar startQuiz) {
+        this.startQuiz = startQuiz;
+    }
+
+    public Calendar getStopQuiz() {
+        return stopQuiz;
+    }
+
+    public void setStopQuiz(Calendar stopQuiz) {
+        this.stopQuiz = stopQuiz;
+    }
+
+    //Продолжительность ответа пользователя
+    public long getDurationAns() {
+        long d = stopQuiz.getTimeInMillis()-startQuiz.getTimeInMillis();
+//        System.out.println("\nКоличество времени на ответ = " + (d/60000) + " мин, " + ((d%60000)/1000) + " сек");
+        return d;
+    }
+
     // Для заполнения вопроса, сообщается сам вопрос, развернутое содержание и список вариантов ответов.
     public Question(String questions, StringBuilder addons, List<OptionQA> optionQAs) {
         this.question = questions;
         this.addons = addons;
         this.optionQAs = optionQAs;
+
+        // Время обозначения начала тестирования
+        startQuiz = Calendar.getInstance();
     }
 
     public StringBuilder getAddons() {
@@ -55,11 +94,13 @@ public class Question implements Serializable{
     // Строка с ответами: разделенные запятыми или пробелами варианты ответов 1,3
     public void setUserAnswers(String answers) {
 
-        for (int i = 0; i < answers.split("(\\p{Punct}|\\p{Blank})").length; i++) {
+        //Ответ пользователя
+        stopQuiz = Calendar.getInstance();
 
-            optionQAs.get(Integer.parseInt(answers.split("(\\p{Punct}|\\p{Blank})")[i])-1).setUserAnswer((byte) 1);
+        String splitter = "(\\p{Punct}|\\p{Blank})";
 
-            optionQAs.get(Integer.parseInt(answers.split("(\\p{Punct}|\\p{Blank})")[i])-1).setUserAnswerB(true);
+        for (int i = 0; i < answers.split(splitter).length; i++) {
+            optionQAs.get(Integer.parseInt(answers.split(splitter)[i])-1).setUserAnswerB(true);
         }
     }
 
@@ -69,8 +110,7 @@ public class Question implements Serializable{
         for(int i = 0; i < optionQAs.size(); i++) {
             if(optionQAs.get(i).isCorrectOpt()) sumOptionsTrue++;
             if(optionQAs.get(i).isCorrectOpt() & optionQAs.get(i).isUserAnswerB()) sumAnsTrue++;
-            if( (optionQAs.get(i).isCorrectOpt() ^ optionQAs.get(i).isUserAnswerB()) & !optionQAs.get(i).isUserAnswerB()) {sunAnsFalse++;
-                System.out.println("i = " + i);}
+            if( (optionQAs.get(i).isCorrectOpt() ^ optionQAs.get(i).isUserAnswerB()) & !optionQAs.get(i).isUserAnswerB()) {sunAnsFalse++; }
         }
 //        System.out.println("Sum of all true options = " + sumOptionsTrue);
 //        System.out.println("Sum of true answers = " + sumAnsTrue);
@@ -106,12 +146,17 @@ public class Question implements Serializable{
             s.append("\n");
             i++;
         }
+
         return String.valueOf(s);
     }
 
     @Override
     public String toString() {
-        return question + "\n" + addons.toString() + "\n" + getStringOptionQAs();
+
+        return "\nВопрос №" + numQ++
+                +"\n" + question
+                + "\n" + addons.toString()
+                + "\n" + getStringOptionQAs();
     }
 }
 

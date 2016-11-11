@@ -4,10 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class for Quizs - tests
@@ -42,11 +39,14 @@ public class Quiz {
     }
 
     public void runTest() throws IOException {
-        System.out.println("Запуск теста: " + name);
 
+        System.out.println("Запуск теста: " + name);
 
         // Поток на получение ответов пользователя
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+
+        //Встряхнем вопросы
+        Collections.shuffle(questions);
 
         // Последовательный вывод вопросов с вариантами ответов. В этом же цикле ввод результатов.
         for(Question question: questions){
@@ -59,20 +59,41 @@ public class Quiz {
 
             //Вызов метода расчета оценки
             question.markEst();
+
+            //Вызов продолжительности в MS
+            question.getDurationAns();
         }
 
         bufferedReader.close();
 
         //Вывод результата пользователя
-        System.out.println("Ответы пользователя:");
+        System.out.println("\nОтветы пользователя:");
 
+        int i=1;
+        for(Question question: questions){
+            System.out.print("В" + i +"\t");
+            i++;
+        }
+        System.out.println();
+
+        //Вывод оценок за каждый вопрос и подсчет суммы вопросов
         int sumMarks = 0;
         for(Question question: questions){
             System.out.print(question.getMark() + "\t");
+
             sumMarks += question.getMark();
         }
+        System.out.println();
 
-        System.out.println("\nОбщая оценка: " + (5*(float)sumMarks/questions.size()/100));
+        //Время прохождения каждого вопроса и подсчет общего времени
+        long t = 0;
+        for(Question question: questions) {
+            System.out.print((question.getDurationAns()/1000) + "c\t");
+            t += question.getDurationAns();
+        }
+
+        System.out.println("\n\nОбщая оценка за тест: " + (5*(float)sumMarks/questions.size()/100));
+        System.out.println("Общее время прохождения теста: " + (t/60000) + " мин, " + ((t%60000)/1000) + " сек");
 
     }
 
@@ -84,7 +105,7 @@ public class Quiz {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(pathToFile));
 
         //Инициализация массива вопросов
-        List<Question> questions = new ArrayList<>();
+        questions = new ArrayList<>();
 
         String s = bufferedReader.readLine();
 
@@ -112,10 +133,10 @@ public class Quiz {
                 OptionQA optionQA = null;
                 if (s.matches("^\\s*(\\-).*")) {
 //                    System.out.println("неверно! " + s);
-                    optionQA = new OptionQA(s.substring(1), (byte) 0, false);
+                    optionQA = new OptionQA(s.substring(1), false);
                 } else if (s.matches("^\\s*(\\+).*")) {
 //                    System.out.println("верно! " + s);
-                    optionQA = new OptionQA(s.substring(1), (byte) 1, true);
+                    optionQA = new OptionQA(s.substring(1), true);
                 }
 
                 //Добавление ответа в список
@@ -135,8 +156,5 @@ public class Quiz {
 
         System.out.println("Файл: " + pathToFile);
         System.out.println("Всего распознано "+ questions.size() + " вопроса(-ов). \n");
-
-        //Возврат
-        this.questions=questions;
     }
 }

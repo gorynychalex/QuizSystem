@@ -1,8 +1,6 @@
 package ru.dvfu.mrcpk.quiz;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class QuizTest {
 
@@ -18,7 +16,5 @@ public class QuizTest {
 
         // 2 часть - запуск теста
         quiz.runTest();
-
-
     }
 }
