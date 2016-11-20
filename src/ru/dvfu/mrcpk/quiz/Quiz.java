@@ -9,25 +9,23 @@ import java.util.*;
 /**
  * Class for Quizs - tests
  */
-public class Quiz {
-
-    //Имя теста
-    private String name;
+public class Quiz extends QuizAb{
 
     //Объявление массива вопросов
     private List<Question> questions;
 
     //Конструктор теста
     public Quiz(String name) {
-        this.name = name;
+        super(name);
+        this.quizName = name;
     }
 
     public String getName() {
-        return name;
+        return quizName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.quizName = name;
     }
 
     public List<Question> getQuestions() {
@@ -38,16 +36,17 @@ public class Quiz {
         this.questions = questions;
     }
 
-    public void runTest() throws IOException {
+    //Запуск теста
+    @Override
+    public void runTest(BufferedReader bufferedReader) throws IOException {
 
-        System.out.println("Запуск теста: " + name);
-
-        // Поток на получение ответов пользователя
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("\nЗапуск теста: " + quizName);
+        System.out.println("Доступно: " + questions.size() + " вопросов.");
 
         //Встряхнем вопросы
         Collections.shuffle(questions);
 
+        String input = null;
         // Последовательный вывод вопросов с вариантами ответов. В этом же цикле ввод результатов.
         for(Question question: questions){
 
@@ -55,7 +54,8 @@ public class Quiz {
 
             System.out.println("Введите последовательно номера правильных ответов, разделенные пробелом или запятой: ");
 
-            question.setUserAnswers(bufferedReader.readLine());
+            input = bufferedReader.readLine();
+            question.setUserAnswers(input);
 
             //Вызов метода расчета оценки
             question.markEst();
@@ -63,10 +63,12 @@ public class Quiz {
             //Вызов продолжительности в MS
             question.getDurationAns();
         }
+    }
 
-        bufferedReader.close();
+    //Вывод результатов пользователя
+    @Override
+    public void getResult(){
 
-        //Вывод результата пользователя
         System.out.println("\nОтветы пользователя:");
 
         int i=1;
@@ -99,10 +101,8 @@ public class Quiz {
 
     //Метод для распознавания текста файла в формате вопроса
     //Не хватает распознавания картинки
-    public void parseQuestions (String pathToFile) throws IOException {
-
-        //Открытие потока на считывание файла
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(pathToFile));
+    @Override
+    public void parseQuestions (BufferedReader bufferedReader) throws IOException {
 
         //Инициализация массива вопросов
         questions = new ArrayList<>();
@@ -152,9 +152,7 @@ public class Quiz {
 //            System.out.println(i++);
         }
 
-        bufferedReader.close();
-
-        System.out.println("Файл: " + pathToFile);
         System.out.println("Всего распознано "+ questions.size() + " вопроса(-ов). \n");
     }
+
 }
