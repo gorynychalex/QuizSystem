@@ -56,13 +56,11 @@ public class QuizTest {
         //Выбор теста
         quizManager.choozeTest(bufferedReader);
 
-
 //        BufferedReader bufferedReaderFile1 = new BufferedReader(new FileReader(fileName));
 //
 //        quizManager.choozeTest(bufferedReaderFile1);
 //
 //        bufferedReaderFile1.close();
-
 
 
         // 2 часть - запуск теста
