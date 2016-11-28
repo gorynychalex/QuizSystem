@@ -1,42 +1,42 @@
 package ru.dvfu.mrcpk.quiz;
 
 /**
- * Класс-структура для обозначения тестов
+ * Класс верхнего уровня для структуры классов тестов
  */
 public class QuizA {
 
-    static int quizId = 0;
+    static int id = 0;
 
-    String quizName;
+    String name;
 
     private int questionNums;
 
-    public QuizA(String quizName) {
-        this.quizId++;
-        this.quizName = quizName;
+    public QuizA(String name) {
+        this.id++;
+        this.name = name;
     }
 
-    public QuizA(int quizId, String quizName) {
-        this.quizId = quizId;
-        this.quizName = quizName;
+    public QuizA(int id, String name) {
+        this.id = id;
+        this.name = name;
         this.questionNums = questionNums;
     }
 
-    public QuizA(String quizName, int questionNums) {
-        this.quizId++;
-        this.quizName = quizName;
+    public QuizA(String name, int questionNums) {
+        this.id++;
+        this.name = name;
         this.questionNums = questionNums;
     }
 
-    public QuizA(int quizId, String quizName, int questionNums) {
-        this.quizId = quizId;
-        this.quizName = quizName;
+    public QuizA(int id, String name, int questionNums) {
+        this.id = id;
+        this.name = name;
         this.questionNums = questionNums;
     }
 
     public void setQuizA(int quizId, String quizName, int questionNums) {
-        this.quizId = quizId;
-        this.quizName = quizName;
+        this.id = quizId;
+        this.name = quizName;
         this.questionNums = questionNums;
     }
 
@@ -44,16 +44,16 @@ public class QuizA {
         return questionNums;
     }
 
-    public String getQuizName() {
-        return quizName;
+    public String getName() {
+        return name;
     }
 
     public int getQuizId() {
-        return quizId;
+        return id;
     }
 
     @Override
     public String toString() {
-        return "Quiz: id = " + quizId + ", name = " + quizName + ", number of questions = " + questionNums;
+        return "Quiz: id = " + id + ", name = " + name + ", number of questions = " + questionNums;
     }
 }

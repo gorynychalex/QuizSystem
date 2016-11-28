@@ -1,9 +1,7 @@
 package ru.dvfu.mrcpk.quiz;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -17,15 +15,29 @@ public class Quiz extends QuizAb{
     //Конструктор теста
     public Quiz(String name) {
         super(name);
-        this.quizName = name;
+        this.name = name;
+    }
+
+    // Количество баллов за тест
+    byte score;
+
+    //Общая оценка за тест
+    float mark;
+
+    public byte getScore() {
+        return score;
+    }
+
+    public float getMark() {
+        return mark;
     }
 
     public String getName() {
-        return quizName;
+        return name;
     }
 
     public void setName(String name) {
-        this.quizName = name;
+        this.name = name;
     }
 
     public List<Question> getQuestions() {
@@ -40,7 +52,7 @@ public class Quiz extends QuizAb{
     @Override
     public void runTest(BufferedReader bufferedReader) throws IOException {
 
-        System.out.println("\nЗапуск теста: " + quizName);
+        System.out.println("\nЗапуск теста: " + name);
         System.out.println("Доступно: " + questions.size() + " вопросов.");
 
         //Встряхнем вопросы
@@ -82,7 +94,6 @@ public class Quiz extends QuizAb{
         int sumMarks = 0;
         for(Question question: questions){
             System.out.print(question.getMark() + "\t");
-
             sumMarks += question.getMark();
         }
         System.out.println();
@@ -94,7 +105,13 @@ public class Quiz extends QuizAb{
             t += question.getDurationAns();
         }
 
-        System.out.println("\n\nОбщая оценка за тест: " + (5*(float)sumMarks/questions.size()/100));
+        //Баллов за тест
+        score = (byte) (sumMarks/questions.size());
+
+        //Оценка за тест
+        mark = (5*(float)sumMarks/questions.size()/100);
+
+        System.out.println("\n\nОбщая оценка за тест: " + mark);
         System.out.println("Общее время прохождения теста: " + (t/60000) + " мин, " + ((t%60000)/1000) + " сек");
 
     }

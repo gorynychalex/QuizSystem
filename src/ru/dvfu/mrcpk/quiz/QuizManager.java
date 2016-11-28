@@ -4,7 +4,10 @@ package ru.dvfu.mrcpk.quiz;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class QuizManager {
@@ -23,6 +26,10 @@ public class QuizManager {
     Quiz quiz;
 
     //Конструкторы
+
+
+    public QuizManager() {
+    }
 
     public QuizManager(List<Student> students, List<QuizA> quizAList) {
         this.students = students;
@@ -90,7 +97,7 @@ public class QuizManager {
         int i = 1;
         for(QuizA quizA: quizAList){
             System.out.print("[" + i + "] ");
-            System.out.println(quizA.getQuizName());
+            System.out.println(quizA.getName());
             i++;
         }
 
@@ -99,13 +106,67 @@ public class QuizManager {
         quizChooze = quizAList.get(quizId-1);
     }
 
+    //Загрузка теста
     public void loadTest(BufferedReader bufferedReader) throws IOException {
+        quiz = new Quiz(quizChooze.name);
+
+        //Запуск метода, который парсит из файла данные
         quiz.parseQuestions(bufferedReader);
     }
 
+
+    //Метод-декоратор запуска теста
     public void runTest(BufferedReader bufferedReader) throws IOException {
-        quiz = new Quiz(quizChooze.quizName);
         quiz.runTest(bufferedReader);
+    }
+
+    // Сохранение результата в файл
+    public void saveResultToFile(OutputStream outputStream){
+
+        //Инициализация интерфейса с потоком вывода в файл
+        PrintWriter printWriter = new PrintWriter(outputStream);
+
+        printWriter.println(new Date());
+
+        printWriter.println("Студент: ");
+        printWriter.print(student.getLastname() + " " + student.getFirstname() + "\n");
+
+        // Запуск сохранения данных: вопрос, варианты ответов, правильный ответ, ответ пользователя
+        if(quiz != null) {
+            //Сохранение шапки
+            printWriter.println("Тест: " + quiz.getName());
+            printWriter.println();
+
+            //Описание полей
+            printWriter.println("Поля:\nN)\t[уст]\t[польз]\t Описание ответа\n");
+
+            int i = 1;
+            //Сохранение вопросов
+            for (Question question : quiz.getQuestions()) {
+
+                printWriter.println("Вопрос №" + i);
+                printWriter.println(question.getQuestion());
+                printWriter.println();
+
+                //Сохранение результатов ответов
+
+                for (OptionQA option : question.getOptionQAs()) {
+                    printWriter.print(i + ")\t");
+                    printWriter.print("[" + option.isCorrectOpt() + "]\t");
+                    //Внесение ответа пользователя
+                    printWriter.print("[" + option.isUserAnswerB() + "]\t");
+                    printWriter.println(option.getOption());
+                    i++;
+                }
+
+                printWriter.println("Балов: " + question.getMark() + "\n");
+            }
+            printWriter.println("Количество баллов: " + quiz.getScore());
+            printWriter.println("Общая оценка за тест: " + quiz.getMark());
+
+        }
+
+        printWriter.close();
     }
 
     public QuizA getQuizChooze() {

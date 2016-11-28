@@ -1,9 +1,6 @@
 package ru.dvfu.mrcpk.quiz;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,42 +10,12 @@ public class QuizTest {
 
     public static void main(String[] args) throws IOException {
 
-        // Загрузка вариантов тестов
-        List<QuizA> quizAList = new ArrayList<>();
-        quizAList.add(new QuizA("Java"));
-        quizAList.add(new QuizA("Android"));
 
-        for(QuizA quizA: quizAList)
-            System.out.println(quizA);
-
-
-        //Инициализация экзамена
-        Quiz quiz = new Quiz("Java");
-
-        // 1 часть - загрузка вопросов
-
-        // распознавание вопросов из файла
-        String fileName = "/home/gorynych/java-questions.txt";
-
-        //Открытие потока на считывание файла
-        BufferedReader bufferedReaderFile = new BufferedReader(new FileReader(fileName));
-
-        quiz.parseQuestions(bufferedReaderFile);
-
-        bufferedReaderFile.close();
-
-        //Поток для работы студента с вариантами
+        //Поток для ввода данных с консоли
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
-        students = new ArrayList<>();
-
-        students.add(new Student("Алексей", "Борисович", "Попович"));
-
-        students.add(new Student("Иван", "Иванович", "Иванов"));
-
         //Объект управления сущностями Студент и Тесты
-        QuizManager quizManager = new QuizManager(students,quizAList);
-
+        QuizManager quizManager = new QuizManager();
 
         //Выбор пользователя
         quizManager.choozeStudent(bufferedReader);
@@ -56,19 +23,31 @@ public class QuizTest {
         //Выбор теста
         quizManager.choozeTest(bufferedReader);
 
-//        BufferedReader bufferedReaderFile1 = new BufferedReader(new FileReader(fileName));
-//
-//        quizManager.choozeTest(bufferedReaderFile1);
-//
-//        bufferedReaderFile1.close();
+
+        // Наименование файла с тестами
+        String fileName = "/home/gorynych/java-questions.txt";
+        BufferedReader bufferedReaderFile1 = new BufferedReader(new FileReader(fileName));
+
+        // Загрузка вопросов теста из файла
+        quizManager.loadTest(new BufferedReader(new FileReader(fileName)));
+
+        bufferedReaderFile1.close();
 
 
         // 2 часть - запуск теста
-        quiz.runTest(bufferedReader);
+        quizManager.runTest(bufferedReader);
 
         //Получение результатов
-        quiz.getResult();
+        quizManager.quiz.getResult();
 
         bufferedReader.close();
+
+        String fileForSave = "/home/gorynych/userResult.txt";
+        FileOutputStream fileOutputStream = new FileOutputStream(fileForSave);
+
+        //Сохранение результатов
+        quizManager.saveResultToFile(fileOutputStream);
+
+        fileOutputStream.close();
     }
 }

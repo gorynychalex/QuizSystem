@@ -25,7 +25,6 @@ public class Question implements Serializable{
     // Результат ответа(ов) на вопрос
     private byte mark;
 
-
     // Таймаут
     Calendar startQuiz;
     Calendar stopQuiz;
@@ -159,4 +158,3 @@ public class Question implements Serializable{
                 + "\n" + getStringOptionQAs();
     }
 }
-
